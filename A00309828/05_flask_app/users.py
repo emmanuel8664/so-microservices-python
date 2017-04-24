@@ -1,9 +1,6 @@
-
-from flask import Flask, abort, request
+from  flask import Flask, abort, request
 import json
-
-from user_commands import get_all_users, add_user, remove_user
-
+from users_commands import get_all_users, add_user, remove_user, recently_logged, user_info, user_commands
 app = Flask(__name__)
 api_url = '/v1.0'
 
@@ -21,6 +18,27 @@ def create_user():
   else:
     return "error while creating user", 400
 
+
+@app.route(api_url+'/users/<string:username>', methods=['GET'])
+def get_user_info(username):
+	info = user_info(""+username)
+        return info, 200
+
+@app.route(api_url+'/users/recently_logged',methods=['GET'])
+def get_recent():
+        list = {}
+        list = recently_logged()
+        return json.dumps(list), 200
+
+
+@app.route(api_url+'/users/<string:username>/commands',methods=['GET'])
+def get_user_commands(username):
+        commands = {}
+        commands = user_commands(""+username)
+        return json.dumps(commands), 200
+
+
+
 @app.route(api_url+'/users',methods=['GET'])
 def read_user():
   list = {}
@@ -29,7 +47,8 @@ def read_user():
 
 @app.route(api_url+'/users',methods=['PUT'])
 def update_user():
-  return "not found", 404
+  return "not implemented", 501 # Not found
+
 
 @app.route(api_url+'/users',methods=['DELETE'])
 def delete_user():
